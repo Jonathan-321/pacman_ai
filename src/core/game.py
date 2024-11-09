@@ -9,6 +9,8 @@ from ..config.maze_layouts import LEVEL_1
 from ..environment.maze import Maze
 from ..agents.pacman import PacmanAgent
 from ..agents.ghost import GhostAgent
+from ..utils.sound_manager import SoundManager
+
 
 # Initialize Pygame
 pygame.init()
@@ -20,6 +22,29 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption("PACMAN AI")
         
+
+        # Initialize pygame and sound
+        pygame.init()
+        pygame.mixer.init()
+        
+        # Initialize display
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        pygame.display.set_caption("PACMAN AI")
+        
+        # Initialize sound manager
+        self.sound_manager = SoundManager()
+        try:
+            self.sound_manager.load_sounds()
+            print("Sound system initialized successfully")
+        except Exception as e:
+            print(f"Warning: Sound initialization failed: {e}")
+        
+        # Play start sound
+        try:
+            self.sound_manager.play_sound('game_start')
+        except Exception as e:
+            print(f"Warning: Could not play start sound: {e}")
+
         # Initialize fonts
         pygame.font.init()
         self.font = pygame.font.Font(None, 30)
@@ -44,6 +69,10 @@ class Game:
         
         # Initialize game state
         self.reset_game()
+
+        self.sound_manager = SoundManager()
+        self.sound_manager.load_sounds()
+
 
     def _count_initial_pellets(self) -> int:
         """Count initial number of pellets and power pellets"""
@@ -99,6 +128,9 @@ class Game:
         # Ghost mode timing
         self.ghost_mode_timer = 0
         self.ghost_mode_scatter = True
+
+        self.sound_manager.play_sound('game_start')
+
 
     
     def draw(self):
@@ -307,12 +339,9 @@ class Game:
     def update(self):
         """Update game state"""
         if not self.is_game_over:
-            # Update time elapsed
-            self.time_elapsed = int(time.time() - self.start_time)
-            
             # Get ghost positions for Pacman AI
             ghost_positions = [(int(round(ghost.x)), int(round(ghost.y))) 
-                             for ghost in self.ghosts]
+                            for ghost in self.ghosts]
             
             # Update Pacman
             self.pacman.update(self.maze, ghost_positions)
@@ -329,17 +358,20 @@ class Game:
                         # Ghost gets eaten
                         ghost.x, ghost.y = self.maze.ghost_starts[0]
                         self.pacman.score += 200
+                        self.sound_manager.play_sound('ghost_eat')
                     else:
                         # Pacman gets caught
                         self.is_game_over = True
                         self.game_won = False
                         self.final_message = f"Game Over! Score: {self.pacman.score}"
+                        self.sound_manager.play_sound('death')
             
             # Check for win condition
             if self.check_win_condition():
                 self.is_game_over = True
                 self.game_won = True
                 self.final_message = f"You Win! Final Score: {self.pacman.score}"
+                self.sound_manager.play_sound('win')
             
             # Update score
             self.score = self.pacman.score
@@ -349,6 +381,7 @@ class Game:
                 for ghost in self.ghosts:
                     if not ghost.is_frightened:
                         ghost.make_frightened()
+                        self.sound_manager.play_sound('power_pellet')
 
     def handle_events(self) -> bool:
         """Handle pygame events"""
@@ -365,3 +398,13 @@ class Game:
                     self.pacman.toggle_control_mode()
         
         return True
+
+
+    def handle_pellet_collection(self, is_power_pellet):
+        """Handle pellet collection and sounds"""
+        if is_power_pellet:
+            self.sound_manager.play_sound('power_pellet')
+            self.score += 50
+        else:
+            self.sound_manager.play_sound('chomp')
+            self.score += 10

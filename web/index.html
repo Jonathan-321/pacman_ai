@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacman AI</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Pacman AI</h1>
+            <div class="controls">
+                <button id="toggleAI">Toggle AI/Manual</button>
+                <button id="toggleSound">Toggle Sound</button>
+                <button id="restartGame">Restart Game</button>
+            </div>
+        </header>
+        
+        <main>
+            <canvas id="gameCanvas"></canvas>
+            <div id="stats">
+                <p>Score: <span id="score">0</span></p>
+                <p>Mode: <span id="gameMode">AI</span></p>
+                <p>Status: <span id="gameStatus">Running</span></p>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/controls.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
