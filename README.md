@@ -1,6 +1,10 @@
+<p align="center">
+  <img src="assets/visuals/hero_banner.png" alt="Pacman AI — Pathfinding & Ghost AI" width="100%"/>
+</p>
+
 # PACMAN AI Project
 
-This project implements an AI-driven PACMAN game using Python and Pygame.
+This project implements an AI-driven PACMAN game using Python and Pygame, featuring **A* / BFS / DFS pathfinding**, autonomous ghost AI with chase/scatter/frightened modes, and multiple maze levels.
 
 ## Setup
 
